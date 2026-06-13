@@ -377,3 +377,71 @@ input[type=range]::-moz-range-thumb { width:13px; height:13px; border-radius:50%
   #btn-countin { font-size: 10px; padding: 2px 6px; }
   #btn-listen  { font-size: 10px; padding: 2px 6px; }
 }
+
+/* ── Side panel ──────────────────────────── */
+.side-panel {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(280px, 80vw);
+  background: var(--surface);
+  border-left: 1px solid var(--border2);
+  box-shadow: -4px 0 24px rgba(0,0,0,0.5);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 280ms cubic-bezier(0.4,0,0.2,1);
+}
+.side-panel.open {
+  transform: translateX(0);
+}
+.side-panel-overlay {
+  position: fixed; inset: 0; z-index: 199;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+}
+.side-panel-overlay.hidden { display: none; }
+
+.side-panel-inner { flex: 1; overflow-y: auto; padding-bottom: 24px; }
+
+.side-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.side-panel-title { font-weight: 600; font-size: 15px; }
+
+.side-section { padding: 14px 16px 0; }
+.side-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px;
+}
+.side-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.hand-btns-panel .btn-tag { flex: 1; justify-content: center; }
+
+.opt-item {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 10px 0; font-size: 13px; color: var(--text);
+  background: none; border: none; cursor: pointer; text-align: left;
+  transition: color 120ms;
+}
+.opt-item:hover { color: var(--amber); }
+.opt-item svg { width: 16px; height: 16px; color: var(--text-dim); flex-shrink: 0; }
+.opt-item.active { color: var(--amber); }
+.opt-divider { height: 1px; background: var(--border); margin: 6px 0; }
+
+/* ── Fullscreen button state ─────────────── */
+body.is-fullscreen #icon-fs-enter { display: none; }
+body.is-fullscreen #icon-fs-exit  { display: block !important; }
+
+/* ── Landscape: further compact ─────────── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .transport-mid { gap: 6px; }
+  .loop-range    { display: none; }
+  .tempo-label   { display: none; }
+  .score-composer { display: none; }
+  .score-header { padding: 3px 8px; }
+
+  /* Side panel takes full height */
+  .side-panel { width: min(240px, 70vw); }
+}

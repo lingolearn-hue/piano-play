@@ -248,7 +248,8 @@ const App = (() => {
 
   function _setHand(hand) {
     _hand = hand;
-    document.querySelectorAll('.hand-btns .btn-tag').forEach(b => {
+    // Sync both transport and panel hand buttons
+    document.querySelectorAll('.hand-btns .btn-tag, .hand-btns-panel .btn-tag').forEach(b => {
       b.classList.toggle('active', b.dataset.hand === hand);
       b.setAttribute('aria-pressed', String(b.dataset.hand === hand));
     });
@@ -458,14 +459,6 @@ const App = (() => {
     document.getElementById('btn-play').addEventListener('click', _handlePlay);
     document.getElementById('btn-stop').addEventListener('click', _handleStop);
 
-    // Tempo
-    document.getElementById('tempo-slider').addEventListener('input', e => {
-      const v = parseInt(e.target.value);
-      document.getElementById('tempo-val').textContent = v + '%';
-      Player.setTempo(v);
-      Practice.updateSessionTempo(v);
-    });
-
     // Loop
     document.getElementById('btn-loop').addEventListener('click', _toggleLoop);
     document.getElementById('btn-loop-clear').addEventListener('click', () => { _clearLoop(); toast('Loop cleared'); });
@@ -475,45 +468,83 @@ const App = (() => {
       btn.addEventListener('click', () => _setHand(btn.dataset.hand));
     });
 
-    // Count-in
-    document.getElementById('btn-countin').addEventListener('click', () => {
-      const btn = document.getElementById('btn-countin');
-      const on  = btn.getAttribute('aria-pressed') !== 'true';
-      btn.setAttribute('aria-pressed', String(on));
-      btn.classList.toggle('active', on);
+    // Side panel hand buttons (mirror transport)
+    document.querySelectorAll('.hand-btns-panel .btn-tag').forEach(btn => {
+      btn.addEventListener('click', () => _setHand(btn.dataset.hand));
     });
 
-    // Listen
-    document.getElementById('btn-listen').addEventListener('click', async () => {
-      const btn = document.getElementById('btn-listen');
-      const on  = btn.getAttribute('aria-pressed') !== 'true';
-      btn.setAttribute('aria-pressed', String(on));
-      btn.classList.toggle('active', on);
-      if (on) {
+    // Tempo slider panel (mirror)
+    const tSliderPanel = document.getElementById('tempo-slider-panel');
+    const tValPanel    = document.getElementById('tempo-val-panel');
+    tSliderPanel?.addEventListener('input', e => {
+      const v = parseInt(e.target.value);
+      tValPanel.textContent = v + '%';
+      document.getElementById('tempo-slider').value = v;
+      document.getElementById('tempo-val').textContent = v + '%';
+      Player.setTempo(v);
+      Practice.updateSessionTempo(v);
+    });
+    document.getElementById('tempo-slider').addEventListener('input', e => {
+      const v = parseInt(e.target.value);
+      document.getElementById('tempo-val').textContent = v + '%';
+      if (tSliderPanel) { tSliderPanel.value = v; tValPanel.textContent = v + '%'; }
+      Player.setTempo(v);
+      Practice.updateSessionTempo(v);
+    });
+
+    // Count-in (panel)
+    let _countIn = false;
+    document.getElementById('opt-countin').addEventListener('click', () => {
+      _countIn = !_countIn;
+      document.getElementById('opt-countin-label').textContent = `Count-in: ${_countIn ? 'On' : 'Off'}`;
+      document.getElementById('opt-countin').classList.toggle('active', _countIn);
+    });
+
+    // Listen (panel)
+    document.getElementById('opt-listen').addEventListener('click', async () => {
+      const btn  = document.getElementById('opt-listen');
+      const lbl  = document.getElementById('opt-listen-label');
+      const isOn = btn.classList.contains('active');
+      if (!isOn) {
         const ok = await Pitch.start();
-        if (!ok) { btn.setAttribute('aria-pressed','false'); btn.classList.remove('active'); toast('Mic denied', true); }
-        else toast('Listen mode on');
-      } else { Pitch.stop(); }
+        if (!ok) { toast('Mic denied', true); return; }
+        btn.classList.add('active'); lbl.textContent = 'Listen mode: On';
+        toast('Listen mode on');
+      } else {
+        Pitch.stop(); btn.classList.remove('active'); lbl.textContent = 'Listen mode: Off';
+      }
     });
 
-    // Options menu
-    let _optOpen = false;
-    const optMenu = document.getElementById('options-menu');
-    document.getElementById('btn-options').addEventListener('click', e => {
-      e.stopPropagation();
-      _optOpen = !_optOpen;
-      optMenu.classList.toggle('hidden', !_optOpen);
-    });
-    document.addEventListener('click', () => { _optOpen = false; optMenu.classList.add('hidden'); });
+    // Side panel open/close
+    const sidePanel  = document.getElementById('side-panel');
+    const sideOverlay = document.getElementById('side-panel-overlay');
+    const openPanel  = () => {
+      sidePanel.classList.remove('hidden');
+      sidePanel.classList.add('open');
+      sideOverlay.classList.remove('hidden');
+      document.getElementById('btn-options').setAttribute('aria-expanded', 'true');
+    };
+    const closePanel = () => {
+      sidePanel.classList.remove('open');
+      sideOverlay.classList.add('hidden');
+      document.getElementById('btn-options').setAttribute('aria-expanded', 'false');
+      setTimeout(() => sidePanel.classList.add('hidden'), 300);
+    };
+    document.getElementById('btn-options').addEventListener('click', openPanel);
+    document.getElementById('btn-panel-close').addEventListener('click', closePanel);
+    sideOverlay.addEventListener('click', closePanel);
 
+    // Zoom (panel)
     document.getElementById('opt-zoom-in').addEventListener('click', () => {
       _zoom = Math.min(2.0, _zoom + 0.15);
-      if (_curScore) { Score.setZoom(_zoom); }
+      if (_curScore) Score.setZoom(_zoom);
     });
     document.getElementById('opt-zoom-out').addEventListener('click', () => {
       _zoom = Math.max(0.4, _zoom - 0.15);
-      if (_curScore) { Score.setZoom(_zoom); }
+      if (_curScore) Score.setZoom(_zoom);
     });
+
+    // Export (panel)
     document.getElementById('opt-export').addEventListener('click', () => {
       if (!_curPiece) return;
       const s = _curPiece.scores?.find(s => s.format === 'musicxml');
@@ -523,6 +554,22 @@ const App = (() => {
         download: _curPiece.title + '.xml',
       });
       a.click();
+    });
+
+    // Fullscreen
+    const fsBtn = document.getElementById('btn-fullscreen');
+    fsBtn?.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+        document.body.classList.add('is-fullscreen');
+      } else {
+        document.exitFullscreen?.().catch(() => {});
+        document.body.classList.remove('is-fullscreen');
+      }
+    });
+    document.addEventListener('fullscreenchange', () => {
+      const inFS = !!document.fullscreenElement;
+      document.body.classList.toggle('is-fullscreen', inFS);
     });
 
     // Piece editor
