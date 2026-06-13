@@ -182,10 +182,7 @@ const App = (() => {
 
       Player.onNoteOn  = (midi, hand) => Keyboard.noteOn(midi, hand);
       Player.onNoteOff = (midi)       => Keyboard.noteOff(midi);
-      Player.onBeat    = (idx)        => {
-        const t = _noteEvents[idx]?.time ?? 0;
-        Score.setCursorToTime(t, _beatsPerMeasure);
-      };
+      Player.onBeat = (beatTime) => Score.setCursorToTime(beatTime, _beatsPerMeasure);
       Player.onEnd = () => {
         Keyboard.clearNotes();
         _setPlayUI(false);

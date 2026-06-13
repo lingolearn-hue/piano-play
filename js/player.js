@@ -108,7 +108,7 @@ const Player = (() => {
     groups.forEach((group, idx) => {
       const startMs = beatsToMs(group.beat);
       const id = setTimeout(() => {
-        if (_onBeat) _onBeat(idx, groups.length);
+        if (_onBeat) _onBeat(group.beat);
       }, startMs);
       _timeouts.push(id);
     });
