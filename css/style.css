@@ -338,3 +338,42 @@ input[type=range]::-moz-range-thumb { width:13px; height:13px; border-radius:50%
 
 /* Preconnect fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ═══════════════════════════════════════════
+   Landscape phone — compact practice screen
+   ═══════════════════════════════════════════ */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --keyboard-h:   72px;
+    --transport-h:  44px;
+  }
+
+  /* Header: single thin bar — back + title + options only */
+  .score-header {
+    padding: 3px 8px;
+  }
+  .score-title   { font-size: 12px; }
+  .score-composer { display: none; }  /* hide composer in landscape */
+
+  /* Transport: tighter */
+  .transport { padding: 0 8px; gap: 6px; }
+  .transport-mid  { gap: 8px; }
+
+  /* Hide labels that take space */
+  .tempo-label { display: none; }
+  .loop-range  { display: none; }
+
+  /* Smaller buttons */
+  .btn-tag   { padding: 2px 8px; font-size: 10px; }
+  .btn-play  { width: 34px; height: 34px; }
+  .btn-stop  { width: 26px; height: 26px; }
+  .btn-icon  { width: 28px; height: 28px; }
+  .btn-icon svg { width: 14px; height: 14px; }
+
+  /* Hand buttons label compression */
+  .hand-btns .btn-tag[data-hand="both"]  { display: none; } /* hide "Both" — it's default */
+
+  /* Count-in and listen labels */
+  #btn-countin { font-size: 10px; padding: 2px 6px; }
+  #btn-listen  { font-size: 10px; padding: 2px 6px; }
+}
