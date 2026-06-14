@@ -141,8 +141,8 @@ const App = (() => {
 
     // Reset hand to 'both'
     _setHand('both');
-    document.getElementById('tempo-select').value = '100';
-    if(document.getElementById('tempo-select-ls')) document.getElementById('tempo-select-ls').value='100';
+    document.getElementById('tempo-slider').value = '100';
+    document.getElementById('tempo-val').textContent = '100%';
     Player.setTempo(100);
 
     const score = piece.scores?.find(s => s.format === 'musicxml');
@@ -448,9 +448,11 @@ const App = (() => {
     document.getElementById('btn-loop-clear').addEventListener('click', () => { _clearLoop(); toast('Loop cleared'); });
 
     // Landscape ctrl-col
-    document.getElementById('tempo-select-ls')?.addEventListener('change', e => {
+    document.getElementById('tempo-slider-ls')?.addEventListener('input', e => {
       const v = parseInt(e.target.value);
-      document.getElementById('tempo-select').value = v;
+      document.getElementById('tempo-val-ls').textContent = v + '%';
+      document.getElementById('tempo-slider').value = v;
+      document.getElementById('tempo-val').textContent = v + '%';
       Player.setTempo(v); Practice.updateSessionTempo(v);
     });
     document.querySelectorAll('.ctrl-hand .btn-tag').forEach(btn => {
@@ -470,10 +472,15 @@ const App = (() => {
     });
 
     // Tempo slider panel (mirror)
-    document.getElementById('tempo-select-panel')?.addEventListener('change', e => {
+    const tSliderPanel = document.getElementById('tempo-slider-panel');
+    const tValPanel    = document.getElementById('tempo-val-panel');
+    tSliderPanel?.addEventListener('input', e => {
       const v = parseInt(e.target.value);
-      document.getElementById('tempo-select').value = v;
-      Player.setTempo(v); Practice.updateSessionTempo(v);
+      tValPanel.textContent = v + '%';
+      document.getElementById('tempo-slider').value = v;
+      document.getElementById('tempo-val').textContent = v + '%';
+      Player.setTempo(v);
+      Practice.updateSessionTempo(v);
     });
     document.getElementById('tempo-slider').addEventListener('input', e => {
       const v = parseInt(e.target.value);
