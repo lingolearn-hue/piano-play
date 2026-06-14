@@ -54,14 +54,21 @@ const Score = (() => {
     const sp       = SPACE * _zoom;
     const contW    = _container.clientWidth || 600;
     const usableW  = contW - (MARGIN_L + MARGIN_R) * _zoom;
-    const totalBeats = _score.measures.reduce((s, m) => s + m.totalBeats, 0);
-    const beatW    = Math.max((usableW - PREFIX_W * _zoom) / Math.max(totalBeats, 1), MIN_MEAS_W * _zoom / 4);
+
+    // Measure width proportional to number of distinct note onsets (feels more natural)
+    const _onsets = m => {
+      const seen = new Set();
+      m.notes.forEach(n => { if (!n.isRest) seen.add(Math.round(n.beatPos * 1000)); });
+      return Math.max(seen.size, m.totalBeats); // at least as wide as beat count
+    };
+    const totalOnsets = _score.measures.reduce((s, m) => s + _onsets(m), 0);
+    const onsetW = Math.max((usableW - PREFIX_W * _zoom) / Math.max(totalOnsets, 1), MIN_MEAS_W * _zoom / 4);
 
     // Layout measures into systems
     const systems = [];
     let line = [], lineW = PREFIX_W * _zoom;
     for (const m of _score.measures) {
-      const mw = Math.max(m.totalBeats * beatW, MIN_MEAS_W * _zoom);
+      const mw = Math.max(_onsets(m) * onsetW, MIN_MEAS_W * _zoom);
       if (line.length && lineW + mw > usableW + 1) {
         systems.push(line); line = [{ m, w: mw }]; lineW = PREFIX_W * _zoom + mw;
       } else { line.push({ m, w: mw }); lineW += mw; }
@@ -84,17 +91,24 @@ const Score = (() => {
       const usedW = sysLine.reduce((s, e) => s + e.w, 0);
       const stretch = sysLine.length > 1 ? (usableW - PREFIX_W * _zoom) / usedW : 1.0;
 
-      _drawPrefix(sysX, sy, sp, sysIdx === 0);
+      // Draw prefix staves (the lines behind clef/keysig/timesig)
+      const prefW = PREFIX_W * _zoom;
+      if (_hand !== 'left')  _drawStaffLines(sysX, sy, prefW, sp);
+      if (_hand !== 'right') _drawStaffLines(sysX, sy + (STAFF_H + STAFF_GAP) * _zoom, prefW, sp);
 
-      let mx = sysX + PREFIX_W * _zoom;
-      const isFirstSys = sysIdx === 0;
-      const isLastSys  = sysIdx === lastSysIdx;
+      // Opening double barline at left edge
+      _drawDoubleBarline(sysX, sy, sp);
+
+      // Prefix symbols start just after the opening barline
+      _drawPrefix(sysX + 3 * _zoom, sy, sp, sysIdx === 0);
+
+      let mx = sysX + prefW;
+      const isLastSys = sysIdx === lastSysIdx;
       sysLine.forEach(({ m, w }, mIdx) => {
         const mw = w * stretch;
-        _drawMeasure(m, mx, sy, mw, sp, isFirstSys && mIdx === 0);
+        _drawMeasure(m, mx, sy, mw, sp);
         mx += mw;
       });
-      // End barline: double on last system
       if (isLastSys) _drawDoubleBarline(mx, sy, sp);
       else           _drawBarline(mx, sy, sp);
       sy += systemH + sysGap;
@@ -124,29 +138,34 @@ const Score = (() => {
   // ── Prefix ───────────────────────────────
 
   function _drawPrefix(x, sy, sp, showTimeSig) {
-    if (_hand !== 'left')  _drawTrebleClef(x + 3 * _zoom, sy, sp);
-    if (_hand !== 'right') _drawBassClef(x + 3 * _zoom, sy + (STAFF_H + STAFF_GAP) * _zoom, sp);
+    // x = position just after opening barline
+    const bassY = sy + (STAFF_H + STAFF_GAP) * _zoom;
+    if (_hand !== 'left')  _drawTrebleClef(x, sy, sp);
+    if (_hand !== 'right') _drawBassClef(x, bassY, sp);
     if (_score.keyFifths !== 0) {
-      if (_hand !== 'left')  _drawKeySig(x, sy,                                sp, _score.keyFifths, 'treble');
-      if (_hand !== 'right') _drawKeySig(x, sy + (STAFF_H + STAFF_GAP) * _zoom, sp, _score.keyFifths, 'bass');
+      const keySigX = x + sp * 1.8; // after clef
+      if (_hand !== 'left')  _drawKeySig(keySigX, sy,    sp, _score.keyFifths, 'treble');
+      if (_hand !== 'right') _drawKeySig(keySigX, bassY, sp, _score.keyFifths, 'bass');
     }
     if (showTimeSig) {
-      if (_hand !== 'left')  _drawTimeSig(x, sy,                                sp);
-      if (_hand !== 'right') _drawTimeSig(x, sy + (STAFF_H + STAFF_GAP) * _zoom, sp);
+      const timeSigX = x + sp * (_score.keyFifths !== 0 ? 1.8 + Math.abs(_score.keyFifths) * 0.85 + 0.5 : 1.8);
+      if (_hand !== 'left')  _drawTimeSig(timeSigX, sy,    sp);
+      if (_hand !== 'right') _drawTimeSig(timeSigX, bassY, sp);
+    }
+  }
     }
   }
 
   // ── Measure ───────────────────────────────
 
-  function _drawMeasure(measure, x, sy, w, sp, isFirst = false) {
+  function _drawMeasure(measure, x, sy, w, sp) {
     const beatW = w / measure.totalBeats;
 
     // Staff lines
     if (_hand !== 'left')  _drawStaff(x, sy, w, sp, 'treble', measure.idx);
     if (_hand !== 'right') _drawStaff(x, sy + (STAFF_H + STAFF_GAP) * _zoom, w, sp, 'bass', measure.idx);
 
-    if (isFirst) _drawDoubleBarline(x, sy, sp);
-    else         _drawBarline(x, sy, sp);
+    _drawBarline(x, sy, sp);
 
     // Beat position map — record x for EVERY beat that has a note onset,
     // regardless of which hand, so cursor sync always finds the right position.
@@ -203,6 +222,18 @@ const Score = (() => {
   }
 
   // ── Staff ─────────────────────────────────
+
+  function _drawStaffLines(x, y, w, sp) {
+    for (let i = 0; i < STAFF_LINES; i++) {
+      const l = _el('line');
+      const ly = y + i * sp;
+      l.setAttribute('x1', x);     l.setAttribute('y1', ly);
+      l.setAttribute('x2', x + w); l.setAttribute('y2', ly);
+      l.setAttribute('stroke', COLOR_STAFF);
+      l.setAttribute('stroke-width', LINE_W * _zoom);
+      _svg.appendChild(l);
+    }
+  }
 
   function _drawStaff(x, y, w, sp, clef, measureIdx) {
     const g = _el('g');
@@ -370,7 +401,7 @@ const Score = (() => {
       ? (clef === 'treble' ? SHARP_T : SHARP_B)
       : (clef === 'treble' ? FLAT_T  : FLAT_B);
     const sym = fifths > 0 ? '♯' : '♭';
-    const sx  = x + 22 * _zoom;
+    const sx  = x;
     for (let i = 0; i < Math.abs(fifths); i++) {
       const ny = (sy + 2 * sp) - (steps[i] - ref) * (sp / 2);
       const t  = _el('text');
@@ -388,7 +419,7 @@ const Score = (() => {
   function _drawTimeSig(x, sy, sp) {
     [_score.beats, _score.beatType].forEach((n, i) => {
       const t = _el('text');
-      t.setAttribute('x', x + 37 * _zoom); t.setAttribute('y', sy + (i===0?1.5:3.5)*sp);
+      t.setAttribute('x', x + sp * 0.5); t.setAttribute('y', sy + (i===0?1.5:3.5)*sp);
       t.setAttribute('font-size', sp * 2 + 'px'); t.setAttribute('font-weight', 'bold');
       t.setAttribute('fill', COLOR_STAFF); t.setAttribute('text-anchor', 'middle');
       t.textContent = n; _svg.appendChild(t);
