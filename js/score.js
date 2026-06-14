@@ -78,6 +78,7 @@ const Score = (() => {
     _svg.style.cssText = 'background:#fff;display:block;';
 
     let sy = MARGIN_T * _zoom;
+    const lastSysIdx = systems.length - 1;
     systems.forEach((sysLine, sysIdx) => {
       const sysX  = MARGIN_L * _zoom;
       const usedW = sysLine.reduce((s, e) => s + e.w, 0);
@@ -86,12 +87,16 @@ const Score = (() => {
       _drawPrefix(sysX, sy, sp, sysIdx === 0);
 
       let mx = sysX + PREFIX_W * _zoom;
-      sysLine.forEach(({ m, w }) => {
+      const isFirstSys = sysIdx === 0;
+      const isLastSys  = sysIdx === lastSysIdx;
+      sysLine.forEach(({ m, w }, mIdx) => {
         const mw = w * stretch;
-        _drawMeasure(m, mx, sy, mw, sp);
+        _drawMeasure(m, mx, sy, mw, sp, isFirstSys && mIdx === 0);
         mx += mw;
       });
-      _drawBarline(mx, sy, sp);
+      // End barline: double on last system
+      if (isLastSys) _drawDoubleBarline(mx, sy, sp);
+      else           _drawBarline(mx, sy, sp);
       sy += systemH + sysGap;
     });
 
@@ -133,14 +138,15 @@ const Score = (() => {
 
   // ── Measure ───────────────────────────────
 
-  function _drawMeasure(measure, x, sy, w, sp) {
+  function _drawMeasure(measure, x, sy, w, sp, isFirst = false) {
     const beatW = w / measure.totalBeats;
 
     // Staff lines
     if (_hand !== 'left')  _drawStaff(x, sy, w, sp, 'treble', measure.idx);
     if (_hand !== 'right') _drawStaff(x, sy + (STAFF_H + STAFF_GAP) * _zoom, w, sp, 'bass', measure.idx);
 
-    _drawBarline(x, sy, sp);
+    if (isFirst) _drawDoubleBarline(x, sy, sp);
+    else         _drawBarline(x, sy, sp);
 
     // Beat position map — record x for EVERY beat that has a note onset,
     // regardless of which hand, so cursor sync always finds the right position.
@@ -223,6 +229,22 @@ const Score = (() => {
     l.setAttribute('x2', x); l.setAttribute('y2', y2);
     l.setAttribute('stroke', COLOR_STAFF); l.setAttribute('stroke-width', LINE_W * _zoom);
     _svg.appendChild(l);
+  }
+
+  function _drawDoubleBarline(x, sy, sp) {
+    // Thin + thick lines, 2px apart
+    const gap = 2 * _zoom;
+    _drawBarline(x - gap, sy, sp);
+    let y1 = sy;
+    let y2 = sy + (STAFF_H * 2 + STAFF_GAP) * _zoom;
+    if (_hand === 'right') { y2 = sy + STAFF_H * _zoom; }
+    if (_hand === 'left')  { y1 = sy + (STAFF_H + STAFF_GAP) * _zoom; y2 = y1 + STAFF_H * _zoom; }
+    const thick = _el('line');
+    thick.setAttribute('x1', x); thick.setAttribute('y1', y1);
+    thick.setAttribute('x2', x); thick.setAttribute('y2', y2);
+    thick.setAttribute('stroke', COLOR_STAFF);
+    thick.setAttribute('stroke-width', LINE_W * 3 * _zoom);
+    _svg.appendChild(thick);
   }
 
   // ── Note Y ───────────────────────────────
@@ -317,32 +339,47 @@ const Score = (() => {
 
   function _drawTrebleClef(x, sy, sp) {
     const t = _el('text');
-    t.setAttribute('x', x); t.setAttribute('y', sy + 4.2 * sp);
-    t.setAttribute('font-size', sp * 6.5 + 'px'); t.setAttribute('fill', COLOR_STAFF);
-    t.textContent = '𝄞'; _svg.appendChild(t);
+    t.setAttribute('x', x);
+    t.setAttribute('y', sy + 4.0 * sp);
+    t.setAttribute('font-size', sp * 6.2 + 'px');
+    t.setAttribute('fill', COLOR_STAFF);
+    t.textContent = '𝄞';
+    _svg.appendChild(t);
   }
+
   function _drawBassClef(x, sy, sp) {
     const t = _el('text');
-    t.setAttribute('x', x); t.setAttribute('y', sy + 2.8 * sp);
-    t.setAttribute('font-size', sp * 3.5 + 'px'); t.setAttribute('fill', COLOR_STAFF);
-    t.textContent = '𝄢'; _svg.appendChild(t);
+    t.setAttribute('x', x);
+    t.setAttribute('y', sy + 1.5 * sp);
+    t.setAttribute('font-size', sp * 3.2 + 'px');
+    t.setAttribute('fill', COLOR_STAFF);
+    t.textContent = '𝄢';
+    _svg.appendChild(t);
   }
 
   // ── Key signature ─────────────────────────
 
   function _drawKeySig(x, sy, sp, fifths, clef) {
-    const SHARP_T = [4,1,5,2,6,3,7], FLAT_T = [6,3,7,4,8,5,9];
-    const SHARP_B = [2,-1,3,0,4,1,5], FLAT_B = [4,1,5,2,6,3,7];
-    const steps   = fifths > 0 ? (clef==='treble'?SHARP_T:SHARP_B) : (clef==='treble'?FLAT_T:FLAT_B);
-    const ref     = clef === 'treble' ? 6 : -8;
-    const sym     = fifths > 0 ? '♯' : '♭';
-    const sx      = x + 22 * _zoom;
+    if (fifths === 0) return;
+    const SHARP_T = [10,7,11,8,5,2,6];      // F5 C5 G5 D5 A4 E4 B4
+    const FLAT_T  = [6,2,5,8,4,7,3];        // B4 E4 A4 D5 G4 C5 F4
+    const SHARP_B = [-4,-7,-3,-6,-9,-5,-8]; // F3 C3 G3 D3 A2 E3 B2
+    const FLAT_B  = [-8,-5,-9,-6,-10,-7,-11]; // B2 E3 A2 D3 G2 C3 F2
+    const ref   = clef === 'treble' ? 6 : -8;
+    const steps = fifths > 0
+      ? (clef === 'treble' ? SHARP_T : SHARP_B)
+      : (clef === 'treble' ? FLAT_T  : FLAT_B);
+    const sym = fifths > 0 ? '♯' : '♭';
+    const sx  = x + 22 * _zoom;
     for (let i = 0; i < Math.abs(fifths); i++) {
       const ny = (sy + 2 * sp) - (steps[i] - ref) * (sp / 2);
       const t  = _el('text');
-      t.setAttribute('x', sx + i * sp * 0.85); t.setAttribute('y', ny + sp * 0.35);
-      t.setAttribute('font-size', sp * 1.3 + 'px'); t.setAttribute('fill', COLOR_STAFF);
-      t.textContent = sym; _svg.appendChild(t);
+      t.setAttribute('x', sx + i * sp * 0.85);
+      t.setAttribute('y', ny + sp * 0.35);
+      t.setAttribute('font-size', sp * 1.3 + 'px');
+      t.setAttribute('fill', COLOR_STAFF);
+      t.textContent = sym;
+      _svg.appendChild(t);
     }
   }
 
