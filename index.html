@@ -7,7 +7,7 @@
   <title>Piano Play</title>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icons/icon-192.png"/>
-  <link rel="stylesheet" href="css/style.css?v=20260614095721"/>
+  <link rel="stylesheet" href="css/style.css?v=20260614102232"/>
 </head>
 <body class="theme-dark" data-screen="library">
 
@@ -24,7 +24,7 @@
         <span class="bk b"></span><span class="bk w"></span><span class="bk w"></span>
         <span class="bk b"></span>
       </span>
-      <span class="brand-name">Piano Play</span><span style="font-size:9px;color:#555;margin-left:6px">v4l · 2026-06-14T09:57Z
+      <span class="brand-name">Piano Play</span><span style="font-size:9px;color:#555;margin-left:6px">v4m · 2026-06-14T10:22Z
     </div>
     <div class="header-actions">
       <button class="btn-icon" id="btn-theme" title="Toggle theme" aria-label="Toggle theme">
@@ -71,7 +71,7 @@
         <span class="score-title"  id="score-title">—</span>
         <span class="score-composer" id="score-composer">—</span>
       </div>
-      <button class="btn-icon" id="btn-fullscreen" aria-label="Full screen" title="Full screen" onclick="var d=document,e=d.documentElement;if(!d.fullscreenElement&&!d.webkitFullscreenElement){(e.requestFullscreen||e.webkitRequestFullscreen).call(e);document.body.classList.add('is-fullscreen')}else{(d.exitFullscreen||d.webkitExitFullscreen).call(d);document.body.classList.remove('is-fullscreen')}">
+      <button class="btn-icon" id="btn-fullscreen" aria-label="Full screen" title="Full screen" onclick="App.toggleFullscreen()">
         <svg id="icon-fs-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         <svg id="icon-fs-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hidden"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>
       </button>
@@ -267,14 +267,15 @@
 </div>
 
 <div id="toast-wrap" class="toast-wrap"></div>
+<div id="fs-exit-hint" onclick="App.toggleFullscreen()" style="display:none;position:fixed;top:0;right:0;z-index:500;padding:10px;background:rgba(0,0,0,0.4);border-radius:0 0 0 8px;color:#fff;font-size:11px;cursor:pointer">✕ Exit</div>
 
-<script src="js/db.js?v=20260614095721"></script>
-<script src="js/parser.js?v=20260614095721"></script>
-<script src="js/score.js?v=20260614095721"></script>
-<script src="js/keyboard.js?v=20260614095721"></script>
-<script src="js/player.js?v=20260614095721"></script>
-<script src="js/practice.js?v=20260614095721"></script>
-<script src="js/pieces.js?v=20260614095721"></script>
-<script src="js/app.js?v=20260614095721"></script>
+<script src="js/db.js?v=20260614102232"></script>
+<script src="js/parser.js?v=20260614102232"></script>
+<script src="js/score.js?v=20260614102232"></script>
+<script src="js/keyboard.js?v=20260614102232"></script>
+<script src="js/player.js?v=20260614102232"></script>
+<script src="js/practice.js?v=20260614102232"></script>
+<script src="js/pieces.js?v=20260614102232"></script>
+<script src="js/app.js?v=20260614102232"></script>
 </body>
 </html>

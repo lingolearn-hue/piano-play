@@ -593,7 +593,36 @@ const App = (() => {
     });
   }
 
-  return { init, play: _handlePlay, stop: _handleStop };
+  function _toggleFullscreen() {
+    const d = document, e = d.documentElement;
+    const inFS = d.fullscreenElement || d.webkitFullscreenElement || document.body.classList.contains('is-fullscreen');
+    if (!inFS) {
+      // Try native fullscreen (Android/desktop)
+      const req = e.requestFullscreen || e.webkitRequestFullscreen;
+      if (req) {
+        req.call(e);
+      } else {
+        // iOS: simulate by hiding chrome
+        document.body.classList.add('is-fullscreen');
+        toast('Tip: Add to Home Screen for true fullscreen');
+      }
+      document.body.classList.add('is-fullscreen');
+    } else {
+      const exit = d.exitFullscreen || d.webkitExitFullscreen;
+      if (exit) exit.call(d);
+      document.body.classList.remove('is-fullscreen');
+    }
+    // Update icon
+    const enter = document.getElementById('icon-fs-enter');
+    const ex    = document.getElementById('icon-fs-exit');
+    const nowFS = document.body.classList.contains('is-fullscreen');
+    enter?.classList.toggle('hidden',  nowFS);
+    ex?.classList.toggle('hidden',    !nowFS);
+    const hint = document.getElementById('fs-exit-hint');
+    if (hint) hint.style.display = nowFS ? 'block' : 'none';
+  }
+
+  return { init, play: _handlePlay, stop: _handleStop, toggleFullscreen: _toggleFullscreen };
 })();
 window.App = App;
 

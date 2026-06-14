@@ -417,6 +417,9 @@ input[type=range]::-moz-range-thumb { width:13px; height:13px; border-radius:50%
 /* ── Fullscreen button state ─────────────── */
 body.is-fullscreen #icon-fs-enter { display: none; }
 body.is-fullscreen #icon-fs-exit  { display: block !important; }
+body.is-fullscreen .score-header  { display: none; }
+body.is-fullscreen .transport     { display: none; }
+body.is-fullscreen .keyboard-strip { height: calc(var(--keyboard-h) + env(safe-area-inset-bottom)); }
 
 /* ── Landscape: further compact ─────────── */
 @media (max-height: 500px) and (orientation: landscape) {

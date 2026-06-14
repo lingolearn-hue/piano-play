@@ -405,7 +405,7 @@ const Score = (() => {
       const t  = _el('text');
       t.setAttribute('x', sx + i * sp * 0.85);
       t.setAttribute('y', ny + sp * 0.35);
-      t.setAttribute('font-size', sp * 1.3 + 'px');
+      t.setAttribute('font-size', sp * 2.0 + 'px');
       t.setAttribute('fill', COLOR_STAFF);
       t.textContent = sym;
       _svg.appendChild(t);
@@ -455,13 +455,14 @@ const Score = (() => {
     _cursorEl.setAttribute('width',  cw);
     _cursorEl.setAttribute('height', ch);
 
-    // Auto-scroll
+    // Scroll: keep active system at top of viewport
     if (_container) {
-      const absY  = layout.sy;
-      const vTop  = _container.scrollTop;
-      const vBot  = vTop + _container.clientHeight;
-      if (absY < vTop + 20 || absY + ch > vBot - 20) {
-        _container.scrollTop = Math.max(0, absY - _container.clientHeight * 0.25);
+      const absY = layout.sy;
+      const vTop = _container.scrollTop;
+      const vBot = vTop + _container.clientHeight;
+      // Scroll if measure is not visible or not near top
+      if (absY < vTop || absY + ch > vBot) {
+        _container.scrollTop = Math.max(0, absY - 8 * _zoom);
       }
     }
   }
