@@ -214,9 +214,13 @@ const Score = (() => {
   }
 
   function _drawBarline(x, sy, sp) {
+    let y1 = sy;
+    let y2 = sy + (STAFF_H * 2 + STAFF_GAP) * _zoom;
+    if (_hand === 'right') { y2 = sy + STAFF_H * _zoom; }
+    if (_hand === 'left')  { y1 = sy + (STAFF_H + STAFF_GAP) * _zoom; y2 = y1 + STAFF_H * _zoom; }
     const l = _el('line');
-    l.setAttribute('x1', x); l.setAttribute('y1', sy);
-    l.setAttribute('x2', x); l.setAttribute('y2', sy + (STAFF_H * 2 + STAFF_GAP) * _zoom);
+    l.setAttribute('x1', x); l.setAttribute('y1', y1);
+    l.setAttribute('x2', x); l.setAttribute('y2', y2);
     l.setAttribute('stroke', COLOR_STAFF); l.setAttribute('stroke-width', LINE_W * _zoom);
     _svg.appendChild(l);
   }
