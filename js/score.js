@@ -173,7 +173,7 @@ const Score = (() => {
       if (note.isChord) return; // chords share the same beat position
       const key = Math.round(note.beatPos * 1000);
       if (!beatPosMap.has(key)) {
-        beatPosMap.set(key, x + note.beatPos * beatW + beatW * 0.15);
+        beatPosMap.set(key, x + note.beatPos * beatW + beatW * 0.30);
       }
     });
 
@@ -184,7 +184,7 @@ const Score = (() => {
 
       const color  = note.staff === 1 ? COLOR_RIGHT : COLOR_LEFT;
       const staffY = note.staff === 1 ? sy : sy + (STAFF_H + STAFF_GAP) * _zoom;
-      const nx     = x + note.beatPos * beatW + beatW * 0.15;
+      const nx     = x + note.beatPos * beatW + beatW * 0.30;
 
       if (note.isRest) {
         _drawRest(nx, staffY, note.type, note.dot, sp, color);
@@ -379,7 +379,7 @@ const Score = (() => {
   function _drawBassClef(x, sy, sp) {
     const t = _el('text');
     t.setAttribute('x', x);
-    t.setAttribute('y', sy + 1.5 * sp);
+    t.setAttribute('y', sy + 2.5 * sp);
     t.setAttribute('font-size', sp * 3.2 + 'px');
     t.setAttribute('fill', COLOR_STAFF);
     t.textContent = '𝄢';
