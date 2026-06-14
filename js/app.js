@@ -101,35 +101,22 @@ const App = (() => {
   function _makeCard(piece, lastDate, isDue) {
     const card = document.createElement('div');
     card.className = 'piece-card';
+    const sub = [piece.composer, piece.keySignature].filter(Boolean).join(' · ');
     card.innerHTML = `
-      ${isDue ? '<div class="due-badge" title="Due for practice"></div>' : ''}
-      <div class="card-title">${_esc(piece.title)}</div>
-      ${piece.composer ? `<div class="card-composer">${_esc(piece.composer)}</div>` : ''}
-      <div class="card-meta">
-        <div class="diff-dots">
-          ${[1,2,3,4,5].map(i => `<div class="diff-dot ${i <= piece.difficulty ? 'on' : ''}"></div>`).join('')}
-        </div>
-        ${piece.keySignature ? `<span class="card-tag">${_esc(piece.keySignature)}</span>` : ''}
-        ${piece.timeSignature ? `<span class="card-tag">${_esc(piece.timeSignature)}</span>` : ''}
+      <div class="card-main">
+        <div class="card-title">${_esc(piece.title)}</div>
+        ${sub ? `<div class="card-sub">${_esc(sub)}</div>` : ''}
       </div>
-      ${(piece.tags||[]).slice(0,3).map(t => `<span class="card-tag">${_esc(t)}</span>`).join('')}
-      ${lastDate ? `<div style="font-size:10px;color:var(--text-muted);margin-top:4px">Practiced ${_relDate(lastDate)}</div>` : ''}
       <div class="card-actions">
-        <button class="btn-icon edit-btn" title="Edit" aria-label="Edit piece">
+        <button class="btn-icon edit-btn" aria-label="Edit">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         </button>
       </div>
     `;
-
     card.querySelector('.edit-btn').addEventListener('click', e => {
       e.stopPropagation(); openEditor(piece.id);
     });
-
-    // Single tap / touchstart for instant open
-    let tapped = false;
-    card.addEventListener('touchstart', () => { tapped = true; openPractice(piece.id); }, { passive: true });
-    card.addEventListener('click', () => { if (!tapped) openPractice(piece.id); tapped = false; });
-
+    card.addEventListener('click', () => openPractice(piece.id));
     return card;
   }
 

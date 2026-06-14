@@ -94,8 +94,8 @@ input  { font: inherit; color: inherit; outline: none; }
 .chip.active { background: var(--amber); border-color: var(--amber); color: #000; }
 
 .library-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 10px; padding: 14px; overflow-y: auto; flex: 1;
+  display: flex; flex-direction: column;
+  overflow-y: auto; flex: 1;
 }
 .library-empty {
   flex: 1; display: flex; flex-direction: column; align-items: center;
@@ -107,34 +107,18 @@ input  { font: inherit; color: inherit; outline: none; }
 
 /* ── Piece card ──────────────────────────── */
 .piece-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
-  padding: 14px; cursor: pointer; display: flex; flex-direction: column; gap: 6px;
-  position: relative; overflow: hidden; transition: border-color 120ms, transform 120ms;
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  cursor: pointer; background: var(--bg);
   -webkit-tap-highlight-color: transparent; user-select: none;
 }
-.piece-card:active { transform: scale(0.98); }
-.piece-card:hover  { border-color: var(--amber-dim); }
-.piece-card::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: var(--amber); opacity: 0; transition: opacity 120ms;
-}
-.piece-card:hover::before { opacity: 1; }
-.card-title { font-family: var(--font-display); font-size: 15px; font-weight: 600; }
-.card-composer { font-size: 11px; color: var(--text-dim); }
-.card-meta { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
-.diff-dots { display: flex; gap: 3px; }
-.diff-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border2); }
-.diff-dot.on { background: var(--amber); }
-.card-tag { font-size: 10px; color: var(--text-muted); background: var(--surface2); padding: 1px 6px; border-radius: 4px; }
-.card-actions {
-  position: absolute; top: 10px; right: 10px;
-  opacity: 0; pointer-events: none; transition: opacity 120ms;
-}
-.piece-card:hover .card-actions { opacity: 1; pointer-events: auto; }
-.due-badge {
-  position: absolute; top: 10px; left: 10px;
-  width: 7px; height: 7px; border-radius: 50%; background: var(--amber);
-}
+.piece-card:active { background: var(--surface2); }
+.card-main   { flex: 1; min-width: 0; }
+.card-title  { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-sub    { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+.card-actions { flex-shrink: 0; }
+.card-actions .btn-icon { opacity: 0.35; }
+.piece-card:hover .card-actions .btn-icon { opacity: 1; }
 
 /* ── Practice screen ─────────────────────── */
 .practice-layout { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
