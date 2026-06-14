@@ -153,8 +153,6 @@ const Score = (() => {
       if (_hand !== 'right') _drawTimeSig(timeSigX, bassY, sp);
     }
   }
-    }
-  }
 
   // ── Measure ───────────────────────────────
 
