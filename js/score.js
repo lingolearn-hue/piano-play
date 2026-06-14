@@ -231,7 +231,9 @@ const Score = (() => {
   // Bass:   D3 (step -1) on middle line
 
   function _noteY(staffStep, staffY, sp, isBass) {
-    const refStep = isBass ? -1 : 6; // D3 or B4
+    // Treble middle line = B4 = step 6
+    // Bass middle line   = B2 = step -8
+    const refStep = isBass ? -8 : 6;
     return (staffY + 2 * sp) - (staffStep - refStep) * (sp / 2);
   }
 
@@ -332,7 +334,7 @@ const Score = (() => {
     const SHARP_T = [4,1,5,2,6,3,7], FLAT_T = [6,3,7,4,8,5,9];
     const SHARP_B = [2,-1,3,0,4,1,5], FLAT_B = [4,1,5,2,6,3,7];
     const steps   = fifths > 0 ? (clef==='treble'?SHARP_T:SHARP_B) : (clef==='treble'?FLAT_T:FLAT_B);
-    const ref     = clef === 'treble' ? 6 : -1;
+    const ref     = clef === 'treble' ? 6 : -8;
     const sym     = fifths > 0 ? '♯' : '♭';
     const sx      = x + 22 * _zoom;
     for (let i = 0; i < Math.abs(fifths); i++) {
