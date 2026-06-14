@@ -7,7 +7,7 @@
   <title>Piano Play</title>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icons/icon-192.png"/>
-  <link rel="stylesheet" href="css/style.css?v=20260614082720"/>
+  <link rel="stylesheet" href="css/style.css?v=20260614082808"/>
 </head>
 <body class="theme-dark" data-screen="library">
 
@@ -24,7 +24,7 @@
         <span class="bk b"></span><span class="bk w"></span><span class="bk w"></span>
         <span class="bk b"></span>
       </span>
-      <span class="brand-name">Piano Play</span><span style="font-size:9px;color:#555;margin-left:6px">v4e · 2026-06-14T05:47Z
+      <span class="brand-name">Piano Play</span><span style="font-size:9px;color:#555;margin-left:6px">v4f · 2026-06-14T08:28Z
     </div>
     <div class="header-actions">
       <button class="btn-icon" id="btn-theme" title="Toggle theme" aria-label="Toggle theme">
@@ -98,9 +98,7 @@
       </div>
 
       <div class="transport-mid">
-        <span class="tempo-label">Speed</span>
-        <input type="range" id="tempo-slider" min="25" max="150" value="100" step="5" aria-label="Tempo"/>
-        <span class="tempo-val" id="tempo-val">100%</span>
+        <select id="tempo-slider" aria-label="Speed"><option value="25">25%</option><option value="50">50%</option><option value="60">60%</option><option value="70">70%</option><option value="75">75%</option><option value="80">80%</option><option value="90">90%</option><option value="100" selected>100%</option><option value="110">110%</option><option value="120">120%</option><option value="125">125%</option><option value="150">150%</option></select>
       </div>
 
       <div class="transport-right">
@@ -135,8 +133,7 @@
     </div>
     <div class="ctrl-sect">
       <div class="ctrl-lbl">Speed</div>
-      <input type="range" id="tempo-slider-ls" min="25" max="150" value="100" step="5"/>
-      <span class="ctrl-val" id="tempo-val-ls">100%</span>
+      <select id="tempo-slider-ls"><option value="25">25%</option><option value="50">50%</option><option value="60">60%</option><option value="70">70%</option><option value="75">75%</option><option value="80">80%</option><option value="90">90%</option><option value="100" selected>100%</option><option value="110">110%</option><option value="120">120%</option><option value="125">125%</option><option value="150">150%</option></select>
     </div>
     <div class="ctrl-sect">
       <div class="ctrl-lbl">Hand</div>
@@ -189,8 +186,7 @@
       <div class="side-section">
         <div class="side-label">Speed</div>
         <div class="side-row" style="gap:10px">
-          <input type="range" id="tempo-slider-panel" min="25" max="150" value="100" step="5" style="flex:1"/>
-          <span class="tempo-val" id="tempo-val-panel">100%</span>
+          <select id="tempo-slider-panel"><option value="25">25%</option><option value="50">50%</option><option value="60">60%</option><option value="70">70%</option><option value="75">75%</option><option value="80">80%</option><option value="90">90%</option><option value="100" selected>100%</option><option value="110">110%</option><option value="120">120%</option><option value="125">125%</option><option value="150">150%</option></select>
         </div>
       </div>
 
@@ -272,13 +268,13 @@
 
 <div id="toast-wrap" class="toast-wrap"></div>
 
-<script src="js/db.js?v=20260614082720"></script>
-<script src="js/parser.js?v=20260614082720"></script>
-<script src="js/score.js?v=20260614082720"></script>
-<script src="js/keyboard.js?v=20260614082720"></script>
-<script src="js/player.js?v=20260614082720"></script>
-<script src="js/practice.js?v=20260614082720"></script>
-<script src="js/pieces.js?v=20260614082720"></script>
-<script src="js/app.js?v=20260614082720"></script>
+<script src="js/db.js?v=20260614082808"></script>
+<script src="js/parser.js?v=20260614082808"></script>
+<script src="js/score.js?v=20260614082808"></script>
+<script src="js/keyboard.js?v=20260614082808"></script>
+<script src="js/player.js?v=20260614082808"></script>
+<script src="js/practice.js?v=20260614082808"></script>
+<script src="js/pieces.js?v=20260614082808"></script>
+<script src="js/app.js?v=20260614082808"></script>
 </body>
 </html>
