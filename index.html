@@ -7,7 +7,7 @@
   <title>Piano Play</title>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icons/icon-192.png"/>
-  <link rel="stylesheet" href="css/style.css?v=20260614053516"/>
+  <link rel="stylesheet" href="css/style.css?v=20260614053845"/>
 </head>
 <body class="theme-dark" data-screen="library">
 
@@ -24,7 +24,7 @@
         <span class="bk b"></span><span class="bk w"></span><span class="bk w"></span>
         <span class="bk b"></span>
       </span>
-      <span class="brand-name">Piano Play</span><span style="font-size:9px;color:#555;margin-left:6px">v4c · 2026-06-14T05:35Z
+      <span class="brand-name">Piano Play</span><span style="font-size:9px;color:#555;margin-left:6px">v4d · 2026-06-14T05:38Z
     </div>
     <div class="header-actions">
       <button class="btn-icon" id="btn-theme" title="Toggle theme" aria-label="Toggle theme">
@@ -120,6 +120,37 @@
       <canvas id="keyboard-canvas"></canvas>
     </div>
 
+  </div><!-- /practice-layout -->
+
+  <!-- Landscape right column -->
+  <div class="ctrl-col" id="ctrl-col">
+    <div class="ctrl-sect">
+      <button class="btn-play" id="btn-play-ls" aria-label="Play" onclick="App.play()">
+        <svg id="icon-play-ls"  viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg id="icon-pause-ls" viewBox="0 0 24 24" fill="currentColor" class="hidden"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <button class="btn-stop" id="btn-stop-ls" aria-label="Stop" onclick="App.stop()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16"/></svg>
+      </button>
+    </div>
+    <div class="ctrl-sect">
+      <div class="ctrl-lbl">Speed</div>
+      <input type="range" id="tempo-slider-ls" min="25" max="150" value="100" step="5"/>
+      <span class="ctrl-val" id="tempo-val-ls">100%</span>
+    </div>
+    <div class="ctrl-sect">
+      <div class="ctrl-lbl">Hand</div>
+      <div class="ctrl-hand">
+        <button class="btn-tag active" data-hand="both"  aria-pressed="true">⇄</button>
+        <button class="btn-tag"        data-hand="right" aria-pressed="false">R</button>
+        <button class="btn-tag"        data-hand="left"  aria-pressed="false">L</button>
+      </div>
+    </div>
+    <div class="ctrl-sect">
+      <button class="btn-tag" id="btn-loop-ls" aria-pressed="false">Loop</button>
+      <button class="btn-tag" id="btn-loop-clear-ls">✕</button>
+      <span class="ctrl-val" id="loop-range-ls">—</span>
+    </div>
   </div>
 
   <!-- Side options panel -->
@@ -241,13 +272,13 @@
 
 <div id="toast-wrap" class="toast-wrap"></div>
 
-<script src="js/db.js?v=20260614053516"></script>
-<script src="js/parser.js?v=20260614053516"></script>
-<script src="js/score.js?v=20260614053516"></script>
-<script src="js/keyboard.js?v=20260614053516"></script>
-<script src="js/player.js?v=20260614053516"></script>
-<script src="js/practice.js?v=20260614053516"></script>
-<script src="js/pieces.js?v=20260614053516"></script>
-<script src="js/app.js?v=20260614053516"></script>
+<script src="js/db.js?v=20260614053845"></script>
+<script src="js/parser.js?v=20260614053845"></script>
+<script src="js/score.js?v=20260614053845"></script>
+<script src="js/keyboard.js?v=20260614053845"></script>
+<script src="js/player.js?v=20260614053845"></script>
+<script src="js/practice.js?v=20260614053845"></script>
+<script src="js/pieces.js?v=20260614053845"></script>
+<script src="js/app.js?v=20260614053845"></script>
 </body>
 </html>

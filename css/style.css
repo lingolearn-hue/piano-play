@@ -445,3 +445,32 @@ body.is-fullscreen #icon-fs-exit  { display: block !important; }
   /* Side panel takes full height */
   .side-panel { width: min(240px, 70vw); }
 }
+
+/* ── Landscape right column ──────────────── */
+.ctrl-col { display: none; }
+
+@media (orientation: landscape) and (max-height: 520px) {
+  #screen-practice { flex-direction: row; }
+  .practice-layout { flex: 1; min-width: 0; }
+  .transport       { display: none; }
+  .score-header    { padding: 2px 8px; }
+  .score-composer  { display: none; }
+  .score-title     { font-size: 12px; }
+
+  .ctrl-col {
+    display: flex; flex-direction: column; gap: 10px;
+    width: 110px; flex-shrink: 0;
+    background: var(--surface); border-left: 1px solid var(--border);
+    padding: 8px; overflow-y: auto;
+  }
+  .ctrl-sect { display: flex; flex-direction: column; gap: 4px; }
+  .ctrl-lbl  { font-size: 9px; font-weight: 600; text-transform: uppercase;
+               letter-spacing: .07em; color: var(--text-dim); }
+  .ctrl-val  { font-size: 10px; color: var(--amber); }
+  .ctrl-hand { display: flex; gap: 3px; }
+  .ctrl-hand .btn-tag { flex: 1; justify-content: center; font-size: 10px; padding: 3px 2px; }
+  .ctrl-col .btn-tag  { font-size: 10px; padding: 3px 6px; }
+  .ctrl-col input[type=range] { width: 100%; }
+  .ctrl-col .btn-play { width: 38px; height: 38px; }
+  .ctrl-col .btn-stop { width: 28px; height: 28px; }
+}

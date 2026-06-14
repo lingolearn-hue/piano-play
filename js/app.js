@@ -237,8 +237,8 @@ const App = (() => {
   }
 
   function _setPlayUI(on) {
-    document.getElementById('icon-play') .classList.toggle('hidden',  on);
-    document.getElementById('icon-pause').classList.toggle('hidden', !on);
+    ['icon-play','icon-play-ls'].forEach(id => document.getElementById(id)?.classList.toggle('hidden', on));
+    ['icon-pause','icon-pause-ls'].forEach(id => document.getElementById(id)?.classList.toggle('hidden', !on));
   }
 
   // ── Hand ──────────────────────────────────
@@ -246,7 +246,7 @@ const App = (() => {
   function _setHand(hand) {
     _hand = hand;
     // Sync both transport and panel hand buttons
-    document.querySelectorAll('.hand-btns .btn-tag, .hand-btns-panel .btn-tag').forEach(b => {
+    document.querySelectorAll('.hand-btns .btn-tag, .hand-btns-panel .btn-tag, .ctrl-hand .btn-tag').forEach(b => {
       b.classList.toggle('active', b.dataset.hand === hand);
       b.setAttribute('aria-pressed', String(b.dataset.hand === hand));
     });
@@ -460,6 +460,20 @@ const App = (() => {
     document.getElementById('btn-loop').addEventListener('click', _toggleLoop);
     document.getElementById('btn-loop-clear').addEventListener('click', () => { _clearLoop(); toast('Loop cleared'); });
 
+    // Landscape ctrl-col
+    document.getElementById('tempo-slider-ls')?.addEventListener('input', e => {
+      const v = parseInt(e.target.value);
+      document.getElementById('tempo-val-ls').textContent = v + '%';
+      document.getElementById('tempo-slider').value = v;
+      document.getElementById('tempo-val').textContent = v + '%';
+      Player.setTempo(v); Practice.updateSessionTempo(v);
+    });
+    document.querySelectorAll('.ctrl-hand .btn-tag').forEach(btn => {
+      btn.addEventListener('click', () => _setHand(btn.dataset.hand));
+    });
+    document.getElementById('btn-loop-ls')?.addEventListener('click', _toggleLoop);
+    document.getElementById('btn-loop-clear-ls')?.addEventListener('click', _clearLoop);
+
     // Hand
     document.querySelectorAll('.hand-btns .btn-tag').forEach(btn => {
       btn.addEventListener('click', () => _setHand(btn.dataset.hand));
@@ -597,7 +611,8 @@ const App = (() => {
     });
   }
 
-  return { init };
+  return { init, play: _handlePlay, stop: _handleStop };
 })();
+window.App = App;
 
 document.addEventListener('DOMContentLoaded', App.init);
